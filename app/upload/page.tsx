@@ -5,8 +5,7 @@ import { useState } from "react";
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState("");
-
-  console.log(";;;", file);
+  const [chunkCount, setChunkCount] = useState(null);
 
   const handleUpload = async () => {
     if (!file) return;
@@ -21,6 +20,7 @@ export default function UploadPage() {
 
     const data = await res.json();
     setText(data.text);
+    setChunkCount(data.chunks);
   };
 
   return (
@@ -39,7 +39,7 @@ export default function UploadPage() {
       >
         Upload
       </button>
-
+      <span>{chunkCount}</span>
       <div className="mt-6 whitespace-pre-wrap">{text}</div>
     </div>
   );

@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { chunkText } from "@/services/chunkText";
 import { cleanText } from "@/services/cleanupUtils";
 import { NextRequest, NextResponse } from "next/server";
+import { generateEmbedding } from "@/services/embeddings";
 import PDFParser from "pdf2json";
 
 export async function POST(req: NextRequest) {
@@ -28,7 +29,6 @@ export async function POST(req: NextRequest) {
 
         pdfData.Pages.forEach((page: any) => {
           page.Texts.forEach((textItem: any) => {
-            console.log(textItem);
             textItem.R.forEach((r: any) => {
               extractedText += decodeURIComponent(r.T) + " ";
             });
@@ -45,9 +45,19 @@ export async function POST(req: NextRequest) {
     const cleaned = cleanText(text);
     const chunks = chunkText(cleaned);
 
+    const embeddedChunks = await Promise.all(
+      chunks.map(async (chunk) => {
+        const embedding = await generateEmbedding(chunk);
+        return {
+          text: chunk,
+          embedding,
+        };
+      }),
+    );
+
     return NextResponse.json({
       text: cleaned,
-      chunks,
+      chunks: embeddedChunks.length,
     });
   } catch (error: any) {
     console.error("PDF ERROR:", error);
