@@ -1,5 +1,7 @@
 export const runtime = "nodejs";
 
+import { chunkText } from "@/services/chunkText";
+import { cleanText } from "@/services/cleanupUtils";
 import { NextRequest, NextResponse } from "next/server";
 import PDFParser from "pdf2json";
 
@@ -40,7 +42,13 @@ export async function POST(req: NextRequest) {
       pdfParser.parseBuffer(buffer);
     });
 
-    return NextResponse.json({ text });
+    const cleaned = cleanText(text);
+    const chunks = chunkText(cleaned);
+
+    return NextResponse.json({
+      text: cleaned,
+      chunks,
+    });
   } catch (error: any) {
     console.error("PDF ERROR:", error);
     return NextResponse.json(
