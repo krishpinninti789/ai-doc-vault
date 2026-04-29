@@ -1,10 +1,10 @@
 export const runtime = "nodejs";
 
-import { chunkText } from "@/services/chunkText";
-import { cleanText } from "@/services/cleanupUtils";
 import { NextRequest, NextResponse } from "next/server";
-import { generateEmbedding } from "@/services/embeddings";
 import PDFParser from "pdf2json";
+import { cleanText } from "../../../services/cleanupUtils";
+import { chunkText } from "../../../services/chunkText";
+import { generateEmbedding } from "../../../services/embeddings";
 
 export async function POST(req: NextRequest) {
   try {
