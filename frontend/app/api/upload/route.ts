@@ -55,6 +55,18 @@ export async function POST(req: NextRequest) {
       }),
     );
 
+    await fetch("http://127.0.0.1:8000/store", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        texts: embeddedChunks.map((c) => c.text),
+        embeddings: embeddedChunks.map((c) => c.embedding),
+        ids: embeddedChunks.map((_, i) => `chunk-${i}-${Date.now()}`),
+      }),
+    });
+
     return NextResponse.json({
       text: cleaned,
       chunks: embeddedChunks.length,
